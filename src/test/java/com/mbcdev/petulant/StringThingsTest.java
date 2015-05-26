@@ -61,4 +61,18 @@ public class StringThingsTest {
     public void compressShouldReturnNullForNullArgument() {
         assertThat("compress should return null if we pass null to it", stringThings.compress(null), nullValue());
     }
+
+    @Test
+    @Parameters({
+            "a,a",
+            "aba,b",
+            "a b c a b,c",
+            "aabbccd,d",
+            "dccbbaa,d",
+            "a ba,b"
+
+    })
+    public void stringsShouldBeCompresseds(String input, Character expected) {
+        assertThat("The string should be compressed", stringThings.findFirstNonRepeatingCharacter(input), allOf(notNullValue(), is(expected)));
+    }
 }
