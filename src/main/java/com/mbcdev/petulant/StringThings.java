@@ -1,5 +1,8 @@
 package com.mbcdev.petulant;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A collection of functions for operating on Strings.
  *
@@ -78,5 +81,57 @@ public class StringThings {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Finds the first non-repeating non-whitespace character in a string
+     *
+     * @param stringToSearch The string to search
+     * @return The first non repeating character or null if the argument was null or empty
+     */
+    public Character findFirstNonRepeatingCharacter(String stringToSearch) {
+
+        if (stringToSearch == null) {
+            return null;
+        }
+
+        String noWhiteSpace = stringToSearch.replaceAll("\\s", "");
+
+        if (noWhiteSpace.length() == 0) {
+            return null;
+        }
+
+        Map<Character, Integer> characterCount = new HashMap<>();
+
+        char[] characters = noWhiteSpace.toCharArray();
+
+        for (char currentCharacter : characters) {
+
+            Integer count = characterCount.get(currentCharacter);
+
+            if (count == null) {
+                characterCount.put(currentCharacter, 1);
+            } else {
+                characterCount.put(currentCharacter, count + 1);
+            }
+        }
+
+        Character firstNonRepeating = null;
+
+        for (int i = 0; i < characters.length && firstNonRepeating == null; i++) {
+            Integer count = characterCount.get(characters[i]);
+
+            if (count == 1) {
+                firstNonRepeating = characters[i];
+            }
+        }
+
+        return firstNonRepeating;
+    }
+
+    public static void main(String[] args) {
+        StringThings stringThings = new StringThings();
+
+        stringThings.findFirstNonRepeatingCharacter("a ba");
     }
 }
