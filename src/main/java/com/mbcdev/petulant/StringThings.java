@@ -129,9 +129,86 @@ public class StringThings {
         return firstNonRepeating;
     }
 
-    public static void main(String[] args) {
-        StringThings stringThings = new StringThings();
+    /**
+     * Rotates the characters in a string by a given amount using character manipulation.
+     * <p/>
+     * If the input is "hello" and we rotate it by 2, then it becomes:
+     *
+     * <ul>
+     *     <li>h -> j</li>
+     *     <li>e -> g</li>
+     *     <li>l -> n</li>
+     *     <li>l -> n</li>
+     *     <li>o -> q</li>
+     * </ul>
+     *
+     * <p/>
+     * If the rotation wraps past 'z' we start add it to 'a'. For example if we
+     * rotate "zoo" by 2 it becomes:
+     *
+     * <ul>
+     *     <li>z -> b</li>
+     *     <li>o -> q</li>
+     *     <li>o -> q</li>
+     * </ul>
+     *
+     * <p/>
+     * This function only operates on a-z and A-Z. Other characters are not rotated.
+     *
+     * @param stringToRotate The string to rotate
+     * @param rotation The number of characters to rotate by, may be positive or negative
+     * @return The rotated string or null if the argument string was null.
+     */
+    public String rotateByN(String stringToRotate, int rotation) {
 
-        stringThings.findFirstNonRepeatingCharacter("a ba");
+        if (stringToRotate == null) {
+            return null;
+        }
+
+        stringToRotate = stringToRotate.trim();
+
+        if (stringToRotate.length() == 0) {
+            return "";
+        }
+
+        if (rotation < 0) {
+            rotation = 26 + (rotation % 26);
+        } else if (rotation > 26) {
+            rotation = rotation % 26;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (char currentChar : stringToRotate.toCharArray()) {
+
+            if (Character.isLowerCase(currentChar)) {
+
+                if (currentChar + rotation > 'z') {
+                    int overshot = ((currentChar + rotation) - 'z') - 1;
+                    stringBuilder.append((char)('a' + overshot));
+                } else {
+                    stringBuilder.append((char)(currentChar + rotation));
+                }
+
+            } else if (Character.isUpperCase(currentChar)) {
+
+                if (currentChar + rotation > 'Z') {
+                    int overshot = ((currentChar + rotation) - 'Z') - 1;
+                    stringBuilder.append((char)('A' + overshot));
+                } else {
+                    stringBuilder.append((char)(currentChar + rotation));
+                }
+
+            } else {
+                stringBuilder.append(currentChar);
+            }
+
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public static void main(String[] args) {
+        // Empty
     }
 }
