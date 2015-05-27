@@ -106,4 +106,35 @@ public class StringThingsTest {
                 allOf(notNullValue(), is(input))
         );
     }
+
+    @Test
+    public void rotateByNMapShouldReturnNull() {
+        assertThat(stringThings.rotateByNMap(null, 13), nullValue());
+    }
+
+    @Test
+    @Parameters({
+            ",13,",
+            "az,-1,zy",
+            "az,1,ba",
+            "az,-26,az",
+            "az,26,az",
+            "az,-27,zy",
+            "az,27,ba",
+            "!@£$,13,!@£$",
+            "Rotation By 13,13,Ebgngvba Ol 13",
+            "abcdefghijklmnopqrstuvwxyz,13,nopqrstuvwxyzabcdefghijklm",
+            "abcdefghijklmnopqrstuvwxyz,16,qrstuvwxyzabcdefghijklmnop"
+
+    })
+    public void stringsShouldBeRotatedByNMap(String input, int rotation, String expected) {
+        String rotated = stringThings.rotateByNMap(input, rotation);
+
+        assertThat("rotation should be correct", rotated, allOf(notNullValue(), is(expected)));
+        assertThat(
+                "negative rotation should give the original input",
+                stringThings.rotateByN(rotated, -rotation),
+                allOf(notNullValue(), is(input))
+        );
+    }
 }
