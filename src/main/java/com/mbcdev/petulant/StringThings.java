@@ -11,6 +11,12 @@ import java.util.Map;
 public class StringThings {
 
     /**
+     * Rotating by a map can be slow, this makes it a bit faster than the non-map
+     * version if we get a cache hit.
+     */
+    private Map<Integer, Map<Character, Character>> mapCache = new HashMap<>();
+
+    /**
      * Reverses a string
      *
      * @param stringToReverse The string to reverse
@@ -129,9 +135,146 @@ public class StringThings {
         return firstNonRepeating;
     }
 
-    public static void main(String[] args) {
-        StringThings stringThings = new StringThings();
+    /**
+     * Rotates the characters in a string by a given amount using character manipulation.
+     * <br/>
+     * If the input is "hello" and we rotate it by 2, then it becomes:
+     *
+     * <ul>
+     *     <li>h -> j</li>
+     *     <li>e -> g</li>
+     *     <li>l -> n</li>
+     *     <li>l -> n</li>
+     *     <li>o -> q</li>
+     * </ul>
+     *
+     * <p/>
+     * If the rotation wraps past 'z' we start add it to 'a'. For example if we
+     * rotate "zoo" by 2 it becomes:
+     *
+     * <ul>
+     *     <li>z -> b</li>
+     *     <li>o -> q</li>
+     *     <li>o -> q</li>
+     * </ul>
+     *
+     * <p/>
+     * This function only operates on a-z and A-Z. Other characters are not rotated.
+     *
+     * @param stringToRotate The string to rotate
+     * @param rotation The number of characters to rotate by, may be positive or negative
+     * @return The rotated string or null if the argument string was null.
+     */
+    public String rotateByN(String stringToRotate, int rotation) {
 
-        stringThings.findFirstNonRepeatingCharacter("a ba");
+        if (stringToRotate == null) {
+            return null;
+        }
+
+        stringToRotate = stringToRotate.trim();
+
+        if (stringToRotate.length() == 0) {
+            return "";
+        }
+
+        if (rotation < 0) {
+            rotation = 26 + (rotation % 26);
+        } else if (rotation > 26) {
+            rotation = rotation % 26;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (char currentChar : stringToRotate.toCharArray()) {
+
+            if (Character.isLowerCase(currentChar)) {
+
+                if (currentChar + rotation > 'z') {
+                    int overshot = ((currentChar + rotation) - 'z') - 1;
+                    stringBuilder.append((char)('a' + overshot));
+                } else {
+                    stringBuilder.append((char)(currentChar + rotation));
+                }
+
+            } else if (Character.isUpperCase(currentChar)) {
+
+                if (currentChar + rotation > 'Z') {
+                    int overshot = ((currentChar + rotation) - 'Z') - 1;
+                    stringBuilder.append((char)('A' + overshot));
+                } else {
+                    stringBuilder.append((char)(currentChar + rotation));
+                }
+
+            } else {
+                stringBuilder.append(currentChar);
+            }
+
+        }
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Rotates the characters in a string by a given amount using character manipulation.
+     * <br/>
+     * This is similar to {@link #rotateByN(String, int)} but it uses a map rather than character
+     * manipulation.
+     *
+     * @param stringToRotate The string to rotate
+     * @param rotation The number of characters to rotate by, may be positive or negative
+     * @return The rotated string or null if the argument string was null.
+     */
+    public String rotateByNMap(String stringToRotate, int rotation) {
+
+        if (stringToRotate == null) {
+            return null;
+        }
+
+        stringToRotate = stringToRotate.trim();
+
+        if (stringToRotate.length() == 0) {
+            return "";
+        }
+
+        char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+
+        if (rotation < 0) {
+            rotation = alphabet.length + (rotation % alphabet.length);
+        } else if (rotation > alphabet.length) {
+            rotation = rotation % alphabet.length;
+        }
+
+        Map<Character, Character> rotationMap = mapCache.get(rotation);
+
+        if (rotationMap == null) {
+            rotationMap = new HashMap<>(alphabet.length);
+
+            for (int i = 0, j = rotation; i < alphabet.length; i++, j++) {
+
+                if (j == alphabet.length) {
+                    j = 0;
+                }
+
+                rotationMap.put(alphabet[i], alphabet[j]);
+                rotationMap.put(Character.toLowerCase(alphabet[i]), Character.toLowerCase(alphabet[j]));
+            }
+
+            mapCache.put(rotation, rotationMap);
+        }
+
+        StringBuilder stringBuilder = new StringBuilder(stringToRotate.length());
+        for (char currentCharacter : stringToRotate.toCharArray()) {
+
+            Character rotatedCharacter = rotationMap.get(currentCharacter);
+
+            if (rotatedCharacter == null) {
+                stringBuilder.append(currentCharacter);
+            } else {
+                stringBuilder.append(rotatedCharacter);
+            }
+        }
+
+        return stringBuilder.toString();
+
     }
 }
